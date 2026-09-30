@@ -37,3 +37,29 @@ export async function createSong(req: Request, res: Response) {
   });
   res.status(201).json(song);
 }
+
+export async function updateSong(req:Request, res: Response) {
+  const id = req.params.id as string;
+  const { title, artist, year, genre, coverUrl, spotifyId, youtubeId } = req.body;
+
+  try {
+    const song = await prisma.song.update({
+      where: { id },
+      data: { title, artist, year, genre, coverUrl, spotifyId, youtubeId },
+    });
+    res.json(song);
+  } catch (err) {
+    res.status(404).json({ error: "Canción no encontrada" });
+  }
+}
+
+export async function deleteSong(req:Request, res: Response) {
+  const id = req.params.id as string;
+
+  try {
+    await prisma.song.delete({ where: { id }});
+    res.status(204).send();
+  } catch (err) {
+    res.status(404).json({ error: "Canción no encontrada" });
+  }
+}
