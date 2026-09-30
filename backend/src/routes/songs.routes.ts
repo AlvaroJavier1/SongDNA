@@ -8,7 +8,7 @@ import {
 const router = Router();
 
 router.get("/", getAllSongs);
-router.get("/", getSongById);
+router.get("/:id", getSongById);
 router.post("/", createSong);
 
 export default router;
