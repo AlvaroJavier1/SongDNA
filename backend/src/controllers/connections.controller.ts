@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import { prisma } from "../db.js";
-import { error } from "node:console";
 
 export async function createConnection(req: Request, res: Response) {
   const {
@@ -23,24 +22,20 @@ export async function createConnection(req: Request, res: Response) {
     });
   }
 
-  try {
-    const connection = await prisma.connection.create({
-      data: {
-        sourceSongId,
-        derivativeSongId,
-        type,
-        description,
-        timestampSource,
-        timestampDerivative,
-      },
-    });
-    res.status(201).json(connection);
-  } catch (err) {
-    res.status(409).json({ error: "Esa conexión ya existe" });
-  }
+  const connection = await prisma.connection.create({
+    data: {
+      sourceSongId,
+      derivativeSongId,
+      type,
+      description,
+      timestampSource,
+      timestampDerivative,
+    },
+  });
+  res.status(201).json(connection);
 }
 
-export async function getAllConnection(req: Request, res: Response) {
+export async function getAllConnections(req: Request, res: Response) {
   const connections = await prisma.connection.findMany({
     include: { sourceSong: true, derivativeSong: true },
     orderBy: { createdAt: "desc" },
@@ -52,5 +47,30 @@ export async function deleteConnection(req: Request, res: Response) {
   const id = req.params.id as string;
 
   await prisma.connection.delete({ where: { id } });
-  res.status(200).send();
+  res.status(204).send();
+}
+
+export async function getConnectionById(req: Request, res: Response) {
+  const id = req.params.id as string;
+
+  const connection = await prisma.connection.findUnique({
+    where: { id },
+    include: { sourceSong: true, derivativeSong: true },
+  });
+
+  if (!connection) {
+    return res.status(404).json({ error: "Conexión no encontrada" });
+  }
+
+  res.json(connection);
+}
+
+export async function updateConnection(req: Request, res: Response) {
+  const id = req.params.id as string;
+  const { type, description, timestampSource, timestampDerivative } = req.body;
+  const connection = await prisma.connection.update({
+    where: { id },
+    data: { type, description, timestampSource, timestampDerivative },
+  });
+  res.json(connection);
 }

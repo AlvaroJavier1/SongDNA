@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import { prisma } from "../db.js";
-import { error } from "node:console";
 
 export async function getAllSongs(req: Request, res: Response) {
   const songs = await prisma.song.findMany({
@@ -10,7 +9,7 @@ export async function getAllSongs(req: Request, res: Response) {
 }
 
 export async function getSongById(req: Request, res: Response) {
-  const id  = req.params.id as string;
+  const id = req.params.id as string;
   const song = await prisma.song.findUnique({
     where: { id },
     include: {
@@ -38,28 +37,12 @@ export async function createSong(req: Request, res: Response) {
   res.status(201).json(song);
 }
 
-export async function updateSong(req:Request, res: Response) {
+export async function updateSong(req: Request, res: Response) {
   const id = req.params.id as string;
-  const { title, artist, year, genre, coverUrl, spotifyId, youtubeId } = req.body;
-
-  try {
-    const song = await prisma.song.update({
-      where: { id },
-      data: { title, artist, year, genre, coverUrl, spotifyId, youtubeId },
-    });
-    res.json(song);
-  } catch (err) {
-    res.status(404).json({ error: "Canción no encontrada" });
-  }
+  const { title, artist, year, genre, coverUrl, spotifyId, youtubeId } =
+    req.body;
 }
 
-export async function deleteSong(req:Request, res: Response) {
+export async function deleteSong(req: Request, res: Response) {
   const id = req.params.id as string;
-
-  try {
-    await prisma.song.delete({ where: { id }});
-    res.status(204).send();
-  } catch (err) {
-    res.status(404).json({ error: "Canción no encontrada" });
-  }
 }

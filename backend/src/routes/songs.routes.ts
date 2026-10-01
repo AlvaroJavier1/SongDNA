@@ -1,18 +1,18 @@
 import { Router } from "express";
 import {
-  getAllSongs,
-  getSongById,
-  createSong,
-  updateSong,
-  deleteSong,
-} from "../controllers/songs.controller.js";
+  createConnection,
+  getAllConnections,
+  getConnectionById,
+  updateConnection,
+  deleteConnection,
+} from "../controllers/connections.controller.js";
 
 const router = Router();
 
-router.get("/", getAllSongs);
-router.get("/:id", getSongById);
-router.post("/", createSong);
-router.patch("/:id", updateSong);
-router.delete("/:id", deleteSong);
+router.get("/", getAllConnections);
+router.get("/:id", getConnectionById);
+router.post("/", createConnection);
+router.patch("/:id", updateConnection);
+router.delete("/:id", deleteConnection);
 
 export default router;

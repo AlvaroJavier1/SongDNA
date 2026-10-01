@@ -1,13 +1,13 @@
 import { Router } from "express";
 import {
   createConnection,
-  getAllConnection,
+  getAllConnections,
   deleteConnection,
 } from "../controllers/connections.controller.js";
 
 const router = Router();
 
-router.get("/", getAllConnection);
+router.get("/", getAllConnections);
 router.post("/", createConnection);
 router.delete("/:id", deleteConnection);
 
