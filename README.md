@@ -11,16 +11,24 @@ Biblioteca donde se documentan las conexiones entre canciones: samples, interpol
 - Zod (validación de datos)
 - pnpm
 
-**Frontend** *(en construcción)*
-- React + Vite + Tailwind CSS
+**Frontend**
+- React + TypeScript
+- Vite
+- Tailwind CSS v4
 
 ## Estructura del proyecto
 
 ```
 SongDNA/
 ├── backend/     API REST (Node.js + Express + Prisma)
-└── frontend/    Interfaz web (React + Vite) — pendiente
+└── frontend/    Interfaz web (React + Vite + Tailwind)
 ```
+
+## Estado actual
+
+- **Backend:** CRUD completo de canciones y conexiones, validación de datos, manejo de errores centralizado, CORS y health check.
+- **Frontend:** lista de canciones y ficha de detalle con sus conexiones (`SAMPLEA A` / `SAMPLEADA POR`), consumiendo la API.
+- **Pendiente:** formulario para agregar canciones y conexiones, buscador y rutas con URL propia por canción.
 
 ## Modelo de datos
 
@@ -29,45 +37,60 @@ SongDNA/
 
 ## Cómo correrlo localmente
 
-1. Clona el repositorio y entra a la carpeta del backend:
-   ```bash
-   cd backend
-   ```
+Necesitas dos terminales, una para cada servidor.
 
-2. Instala las dependencias:
-   ```bash
-   pnpm install
-   ```
+### 1. Backend
 
-3. Crea un archivo `.env` dentro de `backend/` con las siguientes variables (necesitas un proyecto de [Supabase](https://supabase.com) o cualquier PostgreSQL):
-   ```
-   DATABASE_URL="postgresql://..."   # conexión con pooling
-   DIRECT_URL="postgresql://..."     # conexión directa (para migraciones)
-   ```
+```bash
+cd backend
+pnpm install
+```
 
-4. Aplica las migraciones de la base de datos:
-   ```bash
-   pnpm exec prisma migrate dev
-   ```
+Crea un archivo `.env` dentro de `backend/` con las siguientes variables (necesitas un proyecto de [Supabase](https://supabase.com) o cualquier PostgreSQL):
 
-5. Levanta el servidor:
-   ```bash
-   pnpm run dev
-   ```
+```
+DATABASE_URL="postgresql://..."   # conexión con pooling
+DIRECT_URL="postgresql://..."     # conexión directa (para migraciones)
+```
 
-   El servidor corre por defecto en `http://localhost:3000`.
+Aplica las migraciones y levanta el servidor:
+
+```bash
+pnpm exec prisma migrate dev
+pnpm run dev
+```
+
+La API corre en `http://localhost:3000`.
+
+### 2. Frontend
+
+```bash
+cd frontend
+pnpm install
+pnpm run dev
+```
+
+La interfaz corre en `http://localhost:5173`. Por defecto se conecta a `http://localhost:3000`; para usar otra dirección, crea `frontend/.env` con:
+
+```
+VITE_API_URL=http://localhost:3000
+```
+
+### Nota sobre Supabase
+
+En el plan gratuito, Supabase pausa el proyecto tras un tiempo de inactividad. Si la API responde con errores de base de datos (`GET /health` devuelve `disconnected`), revisa el dashboard y reanuda el proyecto.
 
 ## Endpoints disponibles
 
 ### Songs
 
-| Método | Ruta           | Descripción                                   |
-|--------|----------------|------------------------------------------------|
-| GET    | `/songs`       | Lista todas las canciones                      |
-| GET    | `/songs/:id`   | Obtiene una canción con sus conexiones         |
-| POST   | `/songs`       | Crea una canción                               |
-| PATCH  | `/songs/:id`   | Actualiza una canción                          |
-| DELETE | `/songs/:id`   | Elimina una canción (y sus conexiones, en cascada) |
+| Método | Ruta           | Descripción                                        |
+|--------|----------------|-----------------------------------------------------|
+| GET    | `/songs`       | Lista todas las canciones                           |
+| GET    | `/songs/:id`   | Obtiene una canción con sus conexiones              |
+| POST   | `/songs`       | Crea una canción                                    |
+| PATCH  | `/songs/:id`   | Actualiza una canción                               |
+| DELETE | `/songs/:id`   | Elimina una canción (y sus conexiones, en cascada)  |
 
 ### Connections
 
@@ -81,10 +104,10 @@ SongDNA/
 
 ### Otros
 
-| Método | Ruta       | Descripción                                   |
-|--------|------------|------------------------------------------------|
-| GET    | `/`        | Mensaje de bienvenida de la API                |
-| GET    | `/health`  | Verifica que el servidor y la base de datos estén activos |
+| Método | Ruta       | Descripción                                               |
+|--------|------------|------------------------------------------------------------|
+| GET    | `/`        | Mensaje de bienvenida de la API                            |
+| GET    | `/health`  | Verifica que el servidor y la base de datos estén activos  |
 
 ## Ejemplo: crear una conexión
 
