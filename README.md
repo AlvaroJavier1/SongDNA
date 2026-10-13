@@ -7,7 +7,7 @@ Biblioteca donde se documentan las conexiones entre canciones: samples, interpol
 **Backend**
 - Node.js + TypeScript
 - Express 5
-- Prisma 7 (ORM) + PostgreSQL (alojado en [Supabase](https://supabase.com))
+- Prisma 7 (ORM) + PostgreSQL (con Docker en desarrollo local)
 - Zod (validación de datos)
 - pnpm
 
@@ -20,8 +20,9 @@ Biblioteca donde se documentan las conexiones entre canciones: samples, interpol
 
 ```
 SongDNA/
-├── backend/     API REST (Node.js + Express + Prisma)
-└── frontend/    Interfaz web (React + Vite + Tailwind)
+├── backend/             API REST (Node.js + Express + Prisma)
+├── frontend/            Interfaz web (React + Vite + Tailwind)
+└── docker-compose.yml   PostgreSQL y pgAdmin para desarrollo local
 ```
 
 ## Estado actual
@@ -37,20 +38,42 @@ SongDNA/
 
 ## Cómo correrlo localmente
 
-Necesitas dos terminales, una para cada servidor.
+Requisitos: [Node.js](https://nodejs.org), [pnpm](https://pnpm.io) y [Docker](https://www.docker.com) con Docker Compose.
 
-### 1. Backend
+Necesitas una terminal para la base de datos y dos más para los servidores (backend y frontend).
+
+### 1. Base de datos
+
+Desde la raíz del proyecto:
+
+```bash
+docker compose up -d
+```
+
+Esto levanta dos contenedores:
+
+| Servicio | Dirección | Para qué sirve |
+|----------|-----------|----------------|
+| PostgreSQL | `localhost:5432` | La base de datos |
+| pgAdmin | `http://localhost:5050` | Interfaz para ver y revisar las tablas |
+
+Credenciales de desarrollo (solo para uso local):
+
+- **PostgreSQL:** usuario `postgres`, contraseña `songdna`, base `songdna`
+- **pgAdmin:** correo `admin@example.com`, contraseña `admin`. Al registrar el servidor, el host es `db` y el puerto `5432`.
+
+### 2. Backend
 
 ```bash
 cd backend
 pnpm install
 ```
 
-Crea un archivo `.env` dentro de `backend/` con las siguientes variables (necesitas un proyecto de [Supabase](https://supabase.com) o cualquier PostgreSQL):
+Crea un archivo `.env` dentro de `backend/`:
 
 ```
-DATABASE_URL="postgresql://..."   # conexión con pooling
-DIRECT_URL="postgresql://..."     # conexión directa (para migraciones)
+DATABASE_URL="postgresql://postgres:songdna@localhost:5432/songdna"
+DIRECT_URL="postgresql://postgres:songdna@localhost:5432/songdna"
 ```
 
 Aplica las migraciones y levanta el servidor:
@@ -60,9 +83,9 @@ pnpm exec prisma migrate dev
 pnpm run dev
 ```
 
-La API corre en `http://localhost:3000`.
+La API corre en `http://localhost:3000`. Para comprobar que está conectada a la base, abre `http://localhost:3000/health`.
 
-### 2. Frontend
+### 3. Frontend
 
 ```bash
 cd frontend
@@ -76,9 +99,12 @@ La interfaz corre en `http://localhost:5173`. Por defecto se conecta a `http://l
 VITE_API_URL=http://localhost:3000
 ```
 
-### Nota sobre Supabase
+### Notas sobre la base de datos
 
-En el plan gratuito, Supabase pausa el proyecto tras un tiempo de inactividad. Si la API responde con errores de base de datos (`GET /health` devuelve `disconnected`), revisa el dashboard y reanuda el proyecto.
+- Los datos se guardan en un volumen de Docker, así que sobreviven a reinicios. Para detener los contenedores sin perder nada: `docker compose stop`.
+- `docker compose down -v` **borra el volumen** y con él todos los datos.
+- Para ver o editar registros rápidamente también puedes usar Prisma Studio: `pnpm exec prisma studio` (desde `backend/`).
+- Si prefieres una base alojada en lugar de Docker, cualquier PostgreSQL sirve: solo cambia `DATABASE_URL` y `DIRECT_URL` en `backend/.env`.
 
 ## Endpoints disponibles
 

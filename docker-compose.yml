@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:17
+    container_name: songdna-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: songdna
+      POSTGRES_DB: songdna
+    ports:
+      - "5432:5432"
+    volumes:
+      - songdna-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: songdna-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  songdna-data:
