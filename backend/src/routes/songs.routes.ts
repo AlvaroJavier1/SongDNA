@@ -1,6 +1,4 @@
 import { Router } from "express";
-import { validate } from "../middleware/validate.js";
-import { createSongSchema, updateSongSchema } from "../schemas/song.schema.js";
 import {
   createSong,
   deleteSong,
@@ -8,8 +6,13 @@ import {
   getSongById,
   updateSong,
 } from "../controllers/songs.controller.js";
+import { validate } from "../middleware/validate.js";
+import { validateIdParam } from "../middleware/validateId.js";
+import { createSongSchema, updateSongSchema } from "../schemas/song.schema.js";
 
 const router = Router();
+
+router.param("id", validateIdParam);
 
 router.get("/", getAllSongs);
 router.get("/:id", getSongById);

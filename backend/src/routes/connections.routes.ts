@@ -1,9 +1,4 @@
 import { Router } from "express";
-import { validate } from "../middleware/validate.js";
-import {
-  createConnectionSchema,
-  updateConnectionSchema,
-} from "../schemas/connection.schema.js";
 import {
   createConnection,
   getAllConnections,
@@ -11,8 +6,16 @@ import {
   updateConnection,
   deleteConnection,
 } from "../controllers/connections.controller.js";
+import { validate } from "../middleware/validate.js";
+import { validateIdParam } from "../middleware/validateId.js";
+import {
+  createConnectionSchema,
+  updateConnectionSchema,
+} from "../schemas/connection.schema.js";
 
 const router = Router();
+
+router.param("id", validateIdParam);
 
 router.get("/", getAllConnections);
 router.get("/:id", getConnectionById);

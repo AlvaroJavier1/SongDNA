@@ -19,6 +19,11 @@ export function errorHandler(
         .status(409)
         .json({ error: "Ya existe un registro con esos datos " });
     }
+    if (err.code === "P2003") {
+      return res
+        .status(400)
+        .json({ error: "Una de las canciones indicadas no existe" });
+    }
   }
   res.status(500).json({ error: "Error interno del servidor" });
 }

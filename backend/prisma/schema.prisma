@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
 enum ConnectionType {
@@ -13,41 +13,66 @@ enum ConnectionType {
   REMIX
 }
 
+model Artist {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  songs     Song[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Genre {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  slug  String @unique
+  songs Song[]
+}
+
 model Song {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   title     String
-  artist    String
   year      Int?
-  genre     String?
   coverUrl  String?
   spotifyId String?
   youtubeId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  artists Artist[]
+
+  genreId Int?
+  genre   Genre? @relation(fields: [genreId], references: [id], onDelete: SetNull)
+
+  // Conexiones donde esta canción es la ORIGINAL (la que fue sampleada/interpolada)
   sampledBy Connection[] @relation("SourceSong")
-  samples   Connection[] @relation("DerivativeSong")
+
+  // Conexiones donde esta canción es la DERIVADA (la que sampleó/interpoló a otra)
+  samples Connection[] @relation("DerivativeSong")
 
   @@index([title])
-  @@index([artist])
+  @@index([genreId])
 }
 
 model Connection {
-  id          String         @id @default(cuid())
+  id          Int            @id @default(autoincrement())
   type        ConnectionType
   description String?
+  story       String?
+  sourceUrl   String?
 
+  // Segundo donde aparece el fragmento en cada canción (opcional)
   timestampSource     Int?
   timestampDerivative Int?
 
-  sourceSongId String
-  sourceSong   Song   @relation("SourceSong", fields: [sourceSongId], references: [id], onDelete: Cascade)
+  sourceSongId Int
+  sourceSong   Song @relation("SourceSong", fields: [sourceSongId], references: [id], onDelete: Cascade)
 
-  derivativeSongId String
-  derivativeSong   Song   @relation("DerivativeSong", fields: [derivativeSongId], references: [id], onDelete: Cascade)
+  derivativeSongId Int
+  derivativeSong   Song @relation("DerivativeSong", fields: [derivativeSongId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
+  // Evita registrar la misma conexión dos veces
   @@unique([sourceSongId, derivativeSongId, type])
   @@index([sourceSongId])
   @@index([derivativeSongId])

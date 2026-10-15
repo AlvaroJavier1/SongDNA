@@ -1,17 +1,18 @@
 import { z } from "zod";
 
+const connectionTypes = ["SAMPLE", "INTERPOLATION", "COVER", "REMIX"] as const;
+
 export const createConnectionSchema = z.object({
-  sourceSongId: z.string().min(1, "sourceSongId es requerido"),
-  derivativeSongId: z.string().min(1, "derivativeSongId es requerido"),
-  type: z.enum(["SAMPLE", "INTERPOLATION", "COVER", "REMIX"]),
-  description: z.string().optional(),
-  timestampSource: z.number().int().optional(),
-  timestampDerivative: z.number().int().optional(),
+  sourceSongId: z.number().int().positive(),
+  derivativeSongId: z.number().int().positive(),
+  type: z.enum(connectionTypes),
+  description: z.string().trim().optional(),
+  story: z.string().trim().optional(),
+  sourceUrl: z.string().url("sourceUrl debe ser una URL válida").optional(),
+  timestampSource: z.number().int().nonnegative().optional(),
+  timestampDerivative: z.number().int().nonnegative().optional(),
 });
 
-export const updateConnectionSchema = z.object({
-  type: z.enum(["SAMPLE", "INTERPOLATION", "COVER", "REMIX"]).optional(),
-  description: z.string().optional(),
-  timestampSource: z.number().int().optional(),
-  timestampDerivative: z.number().int().optional(),
-});
+export const updateConnectionSchema = createConnectionSchema
+  .omit({ sourceSongId: true, derivativeSongId: true })
+  .partial();
