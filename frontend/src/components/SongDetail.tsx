@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
 import { getSong } from "../api";
-import type {
-  ConnectionType,
-  Song,
-  SongDetail as SongsDetailData,
-} from "../types";
+import type { Connection, Song, SongDetail as SongsDetailData } from "../types";
 import { ConnectionRow } from "./ConnectionRow";
+import { artistNames } from "../utils/format";
 
 interface Item {
-  id: string;
+  connection: Connection;
   song: Song;
-  type: ConnectionType;
-  description: string | null;
 }
 
 function ConnectionList({ title, items }: { title: string; items: Item[] }) {
@@ -22,12 +17,11 @@ function ConnectionList({ title, items }: { title: string; items: Item[] }) {
         <p className="mt-3 text-ink-soft">Aún sin conexiones.</p>
       ) : (
         <ul className="mt-2">
-          {items.map((i) => (
+          {items.map(({ connection, song }) => (
             <ConnectionRow
-              key={i.id}
-              song={i.song}
-              type={i.type}
-              description={i.description}
+              key={connection.id}
+              song={song}
+              connection={connection}
             />
           ))}
         </ul>
@@ -36,7 +30,7 @@ function ConnectionList({ title, items }: { title: string; items: Item[] }) {
   );
 }
 
-export function SongDetail({ id, onBack }: { id: string; onBack: () => void }) {
+export function SongDetail({ id, onBack }: { id: number; onBack: () => void }) {
   const [song, setSong] = useState<SongsDetailData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,7 +52,7 @@ export function SongDetail({ id, onBack }: { id: string; onBack: () => void }) {
     );
   if (!song) return <p className="font-mono">Cargando...</p>;
 
-  const meta = [song.year, song.genre?.toUpperCase()]
+  const meta = [song.year, song.genre?.name.toUpperCase()]
     .filter(Boolean)
     .join(" / ");
 
@@ -74,7 +68,7 @@ export function SongDetail({ id, onBack }: { id: string; onBack: () => void }) {
         {song.title}
       </h1>
       <div className="mt-3 flex items-baseline justify-between gap-4">
-        <p className="text-2xl">{song.artist}</p>
+        <p className="text-2xl">{artistNames(song)}</p>
         <p className="font-mono text-sm text-hot">{meta}</p>
       </div>
       <div className="my-6 h-0.5 bg-ink" />
@@ -82,19 +76,15 @@ export function SongDetail({ id, onBack }: { id: string; onBack: () => void }) {
       <ConnectionList
         title="SAMPLEA A"
         items={song.samples.map((c) => ({
-          id: c.id,
+          connection: c,
           song: c.sourceSong,
-          type: c.type,
-          description: c.description,
         }))}
       />
       <ConnectionList
         title="SAMPLEADA POR"
         items={song.sampledBy.map((c) => ({
-          id: c.id,
+          connection: c,
           song: c.derivativeSong,
-          type: c.type,
-          description: c.description,
         }))}
       />
     </article>

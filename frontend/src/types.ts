@@ -1,20 +1,32 @@
 export type ConnectionType = "SAMPLE" | "INTERPOLATION" | "COVER" | "RERMIX";
 
+export interface Artist {
+  id: number;
+  name: string;
+}
+
+export interface Genre {
+  id: number;
+  name: string;
+  slug: string;
+}
 export interface Song {
-  id: string;
+  id: number;
   title: string;
-  artist: string;
   year: number | null;
-  genre: string | null;
   coverUrl: string | null;
   spotifyId: string | null;
   youtubeId: string | null;
+  artists: Artist[];
+  genre: Genre | null;
 }
 
 export interface Connection {
-  id: string;
+  id: number;
   type: ConnectionType;
   description: string | null;
+  story: string | null;
+  sourceUrl: string | null;
   timestampSource: number | null;
   timestampDerivative: number | null;
   sourceSongId: string;

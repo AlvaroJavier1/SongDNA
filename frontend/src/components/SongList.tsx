@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { getSongs } from "../api";
 import type { Song } from "../types";
+import { songMeta } from "../utils/format";
 
-export function SongList({ onSelect }: { onSelect: (id: string) => void }) {
+export function SongList({ onSelect }: { onSelect: (id: number) => void }) {
   const [songs, setSongs] = useState<Song[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,10 +31,7 @@ export function SongList({ onSelect }: { onSelect: (id: string) => void }) {
             className="flex w-full items-baseline justify-between gap-4 py-4 text-left hover:text-paper focus-visible:outline-4 focus-visible:outline-hot"
           >
             <span className="text-3xl font-black uppercase">{s.title}</span>
-            <span>
-              {s.artist}
-              {s.year ? `, ${s.year}` : ""}
-            </span>
+            <span className="font-mono text-sm">{songMeta(s)}</span>
           </button>
         </li>
       ))}

@@ -3,7 +3,7 @@ import { SongList } from "./components/SongList";
 import { SongDetail } from "./components/SongDetail";
 
 export default function App() {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-10">
@@ -14,7 +14,7 @@ export default function App() {
         </span>
       </header>
       <div className="mb-8 h-1 bg-ink" />
-      {selectedId ? (
+      {selectedId !== null ? (
         <SongDetail
           key={selectedId}
           id={selectedId}

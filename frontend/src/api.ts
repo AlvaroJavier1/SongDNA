@@ -13,4 +13,4 @@ async function request<T>(path: string): Promise<T> {
 }
 
 export const getSongs = () => request<Song[]>("/songs");
-export const getSong = (id: string) => request<SongDetail>(`/songs/${id}`);
+export const getSong = (id: number) => request<SongDetail>(`/songs/${id}`);
