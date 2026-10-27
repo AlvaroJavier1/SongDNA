@@ -5,6 +5,8 @@ import { prisma } from "./db.js";
 import songRouter from "./routes/songs.routes.js";
 import connectionRouter from "./routes/connections.routes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
+import genresRouter from "./routes/genres.routes.js";
+import artistsRouter from "./routes/artists.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +29,9 @@ app.get("/health", async (req, res) => {
     res.status(503).json({ status: "error", database: "disconnected" });
   }
 });
+
+app.use("/genres", genresRouter);
+app.use("/artists", artistsRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
