@@ -1,28 +1,23 @@
-import { useState } from "react";
-import { SongList } from "./components/SongList";
-import { SongDetail } from "./components/SongDetail";
+import { Route, Routes } from "react-router";
+import { Layout } from "./components/Layout";
+import { ArtistPage } from "./pages/ArtistPage";
+import { CatalogPage } from "./pages/CatalogPage";
+import { GenrePage } from "./pages/GenrePage";
+import { HomePage } from "./pages/HomePage";
+import { NotFoundPage } from "./pages/NotFoundPage";
+import { SongPage } from "./pages/SongPage";
 
 export default function App() {
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-
   return (
-    <main className="mx-auto max-w-3xl px-5 py-10">
-      <header className="mb-4 flex items-center justify-between">
-        <span className="font-black tracking-[0.2em]">SONG DNA</span>
-        <span className="font'mono text-xs tracking-wider">
-          FICHA DE CANCIÓN
-        </span>
-      </header>
-      <div className="mb-8 h-1 bg-ink" />
-      {selectedId !== null ? (
-        <SongDetail
-          key={selectedId}
-          id={selectedId}
-          onBack={() => setSelectedId(null)}
-        />
-      ) : (
-        <SongList onSelect={setSelectedId} />
-      )}
-    </main>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<HomePage />} />
+        <Route path="canciones" element={<CatalogPage />} />
+        <Route path="canciones/:id" element={<SongPage />} />
+        <Route path="generos/:slug" element={<GenrePage />} />
+        <Route path="artistas/:id" element={<ArtistPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }

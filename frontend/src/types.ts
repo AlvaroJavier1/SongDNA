@@ -37,3 +37,19 @@ export interface SongDetail extends Song {
   samples: (Connection & { sourceSong: Song })[];
   sampledBy: (Connection & { derivativeSong: Song })[];
 }
+
+export interface GenreWithCount extends Genre {
+  _count: { songs: number };
+}
+
+export interface GenreDetail extends Genre {
+  songs: Song[];
+}
+
+export interface ArtistWithCount extends Artist {
+  _count: { songs: number };
+}
+
+export interface ArtistDetail extends Artist {
+  songs: Song[];
+}

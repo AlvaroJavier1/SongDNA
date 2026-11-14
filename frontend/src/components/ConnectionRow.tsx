@@ -1,5 +1,6 @@
+import { Link } from "react-router";
 import type { Connection, ConnectionType, Song } from "../types";
-import { songMeta } from "../utils/format";
+import { ArtistLinks } from "./ArtistLinks";
 
 const typeColor: Record<ConnectionType, string> = {
   SAMPLE: "text-sample border-sample",
@@ -24,10 +25,16 @@ export function ConnectionRow({ song, connection }: Props) {
           <div className="size-9 rounded-full bg-ink" />
         </div>
         <div className="flex-1">
-          <p className="text-2xl font-black uppercase leading-none">
+          <Link
+            to={`/canciones/${song.id}`}
+            className="block text-2xl font-black uppercase leading-none hover:text-hot focus-visible:outline-4 focus-visible:outline-hot"
+          >
             {song.title}
+          </Link>
+          <p className="mt-1 text-sm">
+            <ArtistLinks artists={song.artists} />
+            {song.year ? `, ${song.year}` : ""}
           </p>
-          <p className="mt-1 text-sm">{songMeta(song)}</p>
         </div>
         <span
           className={`border-2 px-2 py-0.5 font-mono text-xs tracking-wider ${typeColor[type]}`}
