@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { ApiError } from "../api";
 
 export type AsyncState<T> =
   | { status: "loading" }
-  | { status: "error"; message: string }
+  | { status: "error"; message: string; code: number | null }
   | { status: "success"; data: T };
 
 export function useAsync<A, T>(
@@ -20,8 +21,13 @@ export function useAsync<A, T>(
         if (active) setResult({ arg, state: { status: "success", data } });
       })
       .catch((err: Error) => {
-        if (active)
-          setResult({ arg, state: { status: "error", message: err.message } });
+        if (active) {
+          const code = err instanceof ApiError ? err.status : null;
+          setResult({
+            arg,
+            state: { status: "error", message: err.message, code },
+          });
+        }
       });
     return () => {
       active = false;

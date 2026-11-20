@@ -3,9 +3,12 @@ import { Loadable } from "../components/Loadable";
 import { SongRows } from "../components/SongRows";
 import { useAsync } from "../hooks/useAsync";
 import { songCount } from "../utils/format";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 
 export function CatalogPage() {
   const songs = useAsync(getSongs, undefined);
+
+  useDocumentTitle("Canciones");
 
   return (
     <Loadable state={songs}>

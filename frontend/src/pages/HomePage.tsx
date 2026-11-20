@@ -3,6 +3,7 @@ import { getArtists, getGenres } from "../api";
 import { Loadable } from "../components/Loadable";
 import { useAsync } from "../hooks/useAsync";
 import { groupByLetter, songCount } from "../utils/format";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -10,6 +11,7 @@ export function HomePage() {
   const genres = useAsync(getGenres, undefined);
   const artists = useAsync(getArtists, undefined);
 
+  useDocumentTitle();
   return (
     <>
       <h1 className="text-5xl font-black uppercase leading-[0.92] tracking-tight sm:text-6xl">

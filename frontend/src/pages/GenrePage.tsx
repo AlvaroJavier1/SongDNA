@@ -4,10 +4,13 @@ import { Loadable } from "../components/Loadable";
 import { SongRows } from "../components/SongRows";
 import { useAsync } from "../hooks/useAsync";
 import { songCount } from "../utils/format";
+import { titleFor, useDocumentTitle } from "../hooks/useDocumentTitle";
 
 export function GenrePage() {
   const { slug = "" } = useParams();
   const state = useAsync(getGenre, slug);
+
+  useDocumentTitle(titleFor(state, (g) => g.name));
 
   return (
     <Loadable state={state}>
